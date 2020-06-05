@@ -1,388 +1,245 @@
 function Controller(bodyDivId) {
-  createLandingHTML(bodyDivId);
-  // createPreferencesHTML(bodyDivId);
-  // createResultsHTML(bodyDivId);
-}
+  this.model = new Model();
 
-function createLandingHTML(bodyDivId) {
-  let bodyDiv = document.getElementById(bodyDivId);
-  $(bodyDiv).empty();
-  let header = createHeader("City Match", "search");
-  let menuDrawer = createMenuDrawer("Settings", ["About", "Contact", "Help"]);
-  let hamburgerMenu = createHamburgerMenu();
-  let landingText1 =
-    "Considering a move but not sure which cities are your best bet?";
-  let landingText2 =
-    "Explore your options by sharing what's important to you and we'll offer some informed choices.";
-  let mainLanding = createMainLanding(
-    "Find your city",
-    landingText1,
-    landingText2
+  this.view = new View(
+    bodyDivId,
+    this.getLandingPageEventListeners().bind(this),
+    this.getPreferencesPageEventListeners().bind(this),
+    this.getResultsPageEventListeners().bind(this),
+    this.model.getCityRankCB().bind(this.model),
+    this.model.getMinHappinessValue(),
+    this.model.getMidHappinessValue(),
+    this.model.getMaxHappinessValue(),
+    this.model.getMinAffordabilityValue(),
+    this.model.getMidAffordabilityValue(),
+    this.model.getMaxAffordabilityValue(),
+    this.model.getMidPoliticsValue(),
+    this.model.githubUrl
   );
-  let footer = createFooter("navigate_next");
-
-  $(bodyDiv).append(header);
-  $(bodyDiv).append(menuDrawer);
-  $(bodyDiv).append(hamburgerMenu);
-  $(bodyDiv).append(mainLanding);
-  $(bodyDiv).append(footer);
+  this.view.createLandingBody();
 }
 
-function createHeader(title, rightNavIcon) {
-  h = document.createElement("header");
-  $(h).addClass("mdl-layout__header");
-  $(h).html(`
-    <div class="mdl-layout__header-row">
-    <span class="mdl-layout-title">${title}</span>
-    <div class="mdl-layout-spacer"></div>
-      <i class="material-icons">${rightNavIcon}</i>
-    </div>
-  `);
-  return h;
-}
-
-function createMenuDrawer(title, menuItemsArray) {
-  md = document.createElement("div");
-  $(md).addClass("mdl-layout__drawer");
-  $(md).append(`
-    <span class="mdl-layout-title">${title}</span>
-  `);
-  nav = document.createElement("nav");
-  $(nav).addClass("mdl-navigation");
-  let menuHtml = menuItemsArray.map(item => {
-    return `<a class="mdl-navigation__link" href="">${item}</a>`;
+// https://stackoverflow.com/questions/30880757/javascript-equivalent-to-on
+Controller.prototype.delegate = function(el, evt, sel, handler) {
+  el.addEventListener(evt, function(event) {
+    let t = event.target;
+    while (t && t !== this) {
+      if (t.matches(sel)) {
+        handler.call(t, event);
+      }
+      t = t.parentNode;
+    }
   });
-  menuHtml.map(html => {
-    $(md).append(html);
+};
+
+Controller.prototype.getLandingPageEventListeners = function() {
+  return this.addLandingPageEventListeners;
+};
+
+Controller.prototype.addLandingPageEventListeners = function() {
+  nextButton = document.getElementById("navigate_next");
+
+  nextButton.addEventListener(
+    "click",
+    this.getNextButtonEventListener(
+      this.view.createPreferencesBody.bind(this.view)
+    )
+  );
+
+  getStarted = document.getElementById(this.view.getStartedId);
+  getStarted.addEventListener(
+    "click",
+    this.getNextButtonEventListener(
+      this.view.createPreferencesBody.bind(this.view)
+    )
+  );
+
+  /* Make hamburger menu responsive to clicks. */
+  componentHandler.downgradeElements(document.querySelector(".mdl-layout"));
+  componentHandler.upgradeDom();
+};
+
+Controller.prototype.getPreferencesPageEventListeners = function() {
+  return this.addPreferencesPageEventListeners;
+};
+
+Controller.prototype.addPreferencesPageEventListeners = function() {
+  nextButton = document.getElementById("navigate_next");
+
+  nextButton.addEventListener(
+    "click",
+    this.getNextButtonEventListener(this.view.createResultsBody.bind(this.view))
+  );
+
+  /* Make hamburger menu responsive to clicks. */
+  componentHandler.downgradeElements(document.querySelector(".mdl-layout"));
+  componentHandler.upgradeDom();
+
+  this.addSlideSwitchClassEventListener();
+  this.addSliderEventListerners();
+};
+
+Controller.prototype.getResultsPageEventListeners = function() {
+  return this.addResultsPageEventListeners;
+};
+
+Controller.prototype.addResultsPageEventListeners = function() {
+  nextButton = document.getElementById("navigate_before");
+
+  nextButton.addEventListener(
+    "click",
+    this.getNextButtonEventListener(
+      this.view.createPreferencesBody.bind(this.view)
+    )
+  );
+
+  viewButtons = document.getElementsByClassName("view-link");
+  for (let i = 0; i < viewButtons.length; ++i) {
+    let el = viewButtons[i];
+    el.addEventListener("click", this.getViewButtonEventListener());
+  }
+
+  /* Make hamburger menu responsive to clicks. */
+  componentHandler.downgradeElements(document.querySelector(".mdl-layout"));
+  componentHandler.upgradeDom();
+};
+
+Controller.prototype.getViewButtonEventListener = function() {
+  let that = this;
+  function innerFunction() {
+    let theView = this.getAttribute("id");
+    that.view.setActiveDataView(theView);
+    that.view.createResultsBody();
+  }
+  return innerFunction;
+};
+
+Controller.prototype.getNextButtonEventListener = function(createBodyFn) {
+  let that = this;
+  function innerFunction() {
+    createBodyFn();
+  }
+  return innerFunction;
+};
+
+Controller.prototype.addSlideSwitchClassEventListener = function() {
+  var that = this;
+  this.delegate(document, "click", ".mdl-switch__input", function(e) {
+    let imgColorFilter = "";
+    let switchId = this.getAttribute("id");
+    if (that.switchIsEnabled(switchId)) {
+      // Ignore the Job Outlook slide switch until I implement this feature.
+      if (switchId == that.view.switchJobSearchId) {
+        imgColorFilter = "grayscale(100%)"; // make JobSearch img always gray for now.
+      } else {
+        switch (switchId) {
+          case that.view.switchHappinessId:
+            that.view.userPrefs.happinessEnabled = true;
+            break;
+          case that.view.switchAffordabilityId:
+            that.view.userPrefs.affordabilityEnabled = true;
+            break;
+          case that.view.switchPoliticsId:
+            that.view.userPrefs.politicsEnabled = true;
+            break;
+          // case that.view.switchJobSearchId:
+          //   that.userPrefs.jobSearchEnabled = true;
+          //   break;
+        }
+        // console.log("checked");
+        imgColorFilter = "grayscale(0%)"; // make image colorful
+      }
+    } else {
+      switch (switchId) {
+        case that.view.switchHappinessId:
+          that.view.userPrefs.happinessEnabled = false;
+          break;
+        case that.view.switchAffordabilityId:
+          that.view.userPrefs.affordabilityEnabled = false;
+          break;
+        case that.view.switchPoliticsId:
+          that.view.userPrefs.politicsEnabled = false;
+          break;
+        case that.view.switchJobSearchId:
+          that.view.userPrefs.jobSearchEnabled = false;
+          break;
+      }
+      // console.log("not checked");
+      imgColorFilter = "grayscale(100%)"; // make image black & white
+    }
+    // TODO: Fragile!  Walk DOM subtree and find childNode with
+    //       class == ".mdl-card_title"
+    let imgDiv = this.parentNode.parentNode.parentNode.childNodes[1];
+    imgDiv.style.filter = imgColorFilter;
+    console.log("user prefs known to view = ", that.view.userPrefs);
   });
-  return md;
-}
+};
 
-function createHamburgerMenu() {
-  m = document.createElement("div");
-  $(m).addClass("mdl-layout__drawer-button");
-  $(m).attr("role", "button");
-  $(m).attr("aria-expanded", "false");
-  $(m).append(`
-    <i class="material-icons">menu</i>
-  `);
-  return m;
-}
+Controller.prototype.addSliderEventListerners = function() {
+  let sliderH = document.getElementById(this.view.sliderHappinessId);
+  sliderH.addEventListener("change", this.getPreferencesSliderHappinessCB());
 
-function createMainLanding(titleText, supportText1, supportText2) {
-  m = document.createElement("main");
-  $(m).addClass("content");
-  $(m).attr("id", "main");
-  $(m).html(`
-    <div class="landing-card-wide mdl-card mdl-shadow--2dp">
-      <div class="mdl-card__title">
-        <h2 class="mdl-card__title-text">${titleText}</h2>
-      </div>
-      <div class="mdl-card__supporting-text">
-        <p style="line-height: 1.25em;">${supportText1}</p>
-        <p style="line-height: 1.25em;">${supportText2}</p>
-      </div>
-      <div class="mdl-card__actions mdl-card--border">
-        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-          Get Started
-        </a>
-      </div>
-      <div class="mdl-card__menu">
-        <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect"></button>
-      </div>
-    </div>    
-  `);
-  return m;
-}
+  let sliderP = document.getElementById(this.view.sliderPoliticsId);
+  sliderP.addEventListener("change", this.getPreferencesSliderPoliticsCB());
 
-function createFooter(fabIcon) {
-  f = document.createElement("footer");
-  $(f).addClass("mdl-mini-footer");
-  $(f).html(`
-    <button id="navigate_next" data-nextpage="preferences" class="footer-fab mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--primary">
-      <i class="material-icons">${fabIcon}</i>
-    </button>
-    <div class="mdl-mini-footer__left-section"><span class="copyright-text">
-      <i class="material-icons footer-icons">location_city</i>
-      <i class="material-icons footer-icons">favorite</i>
-      <span class="copyright-text">Match Industries &copy; 2019</span>
-    </div>
-  `);
-  return f;
-}
+  let sliderA = document.getElementById(this.view.sliderAffordabilityId);
+  sliderA.addEventListener(
+    "change",
+    this.getPreferencesSliderAffordabilityCB()
+  );
+};
 
-function createPreferencesHTML(bodyDivId) {
-  let bodyDiv = document.getElementById(bodyDivId);
-  $(bodyDiv).empty();
-  let header = createHeader("City Match", "search");
-  let menuDrawer = createMenuDrawer("Settings", ["About", "Contact", "Help"]);
-  let hamburgerMenu = createHamburgerMenu();
-  let mainPreferences = createMainPreferences();
-  let footer = createFooter("navigate_next");
+Controller.prototype.getPreferencesSliderHappinessCB = function() {
+  let that = this;
+  function innerCB(event) {
+    that.view.userPrefs.happiness = this.value;
+    // console.log("happiness value = ", this.value);
+  }
+  return innerCB;
+};
 
-  $(bodyDiv).append(header);
-  $(bodyDiv).append(menuDrawer);
-  $(bodyDiv).append(hamburgerMenu);
-  $(bodyDiv).append(mainPreferences);
-  $(bodyDiv).append(footer);
-}
+Controller.prototype.getPreferencesSliderPoliticsCB = function() {
+  let that = this;
+  function innerCB(event) {
+    let value = this.value;
+    let republicanVal = Number(value);
+    let democratVal = 100 - republicanVal;
+    that.view.userPrefs.politics = {
+      rep16_frac: republicanVal,
+      dem16_frac: democratVal
+    };
+    // console.log("politics value = ", value);
+  }
+  return innerCB;
+};
 
-function createMainPreferences() {
-  m = document.createElement("main");
-  $(m).addClass("mdl-layout__content");
-  $(m).append('<div class="grid-content">');
-  g = document.createElement("div");
-  $(g).addClass("mdl-grid theGrid");
-  $(m).append(g);
+Controller.prototype.getPreferencesSliderAffordabilityCB = function() {
+  let that = this;
+  function innerCB(event) {
+    that.view.userPrefs.affordability = this.value;
+    // console.log("affordability value = ", this.value);
+  }
+  return innerCB;
+};
 
-  let prefParams = {
-    img: "assets/img/civic-happiness-sf.jpg",
-    titleText: "Civic Happiness",
-    leftSliderIcon: "fa-meh",
-    rightSliderIcon: "fa-smile",
-    minSliderVal: "0",
-    maxSliderVal: "100",
-    curSliderVal: "50",
-    sliderEnabled: true,
-    prefLink: "",
-    infoText: ""
-  };
-  let c = createSliderPrefCard(prefParams);
-  $(g).append(c);
+Controller.prototype.getNextButtonEventListener = function(createBodyFn) {
+  let that = this;
+  function innerFunction() {
+    createBodyFn();
+  }
+  return innerFunction;
+};
 
-  prefParams = {
-    img: "assets/img/politics-flags.jpg",
-    titleText: "Political Affiliation",
-    leftSliderIcon: "fa-democrat",
-    rightSliderIcon: "fa-republican",
-    minSliderVal: "0",
-    maxSliderVal: "100",
-    curSliderVal: "50",
-    sliderEnabled: true,
-    prefLink: "",
-    infoText: ""
-  };
-  c = createSliderPrefCard(prefParams);
-  $(g).append(c);
+Controller.prototype.switchIsEnabled = function(switchId) {
+  return document.getElementById(switchId).checked == true;
+};
 
-  prefParams = {
-    img: "assets/img/affordability-piggybank.jpg",
-    titleText: "Affordability",
-    leftSliderIcon: "fa-dollar-sign",
-    rightSliderIcon: "fa-dollar-sign",
-    minSliderVal: "0",
-    maxSliderVal: "100",
-    curSliderVal: "50",
-    sliderEnabled: true,
-    prefLink: "",
-    infoText: ""
-  };
-  c = createSliderPrefCard(prefParams);
-  $(g).append(c);
-
-  prefParams = {
-    img: "assets/img/job-search.jpg",
-    titleText: "Job Outlook",
-    icon: "fa-user",
-    placeHolderText: "Job Title",
-    sliderEnabled: true,
-    prefLink: "",
-    infoText: ""
-  };
-  c = createTextPrefCard(prefParams);
-  $(g).append(c);
-
-  return m;
-}
-
-function createSliderPrefCard(prefParams) {
-  p = document.createElement("div");
-  id = prefParams.titleText.toLowerCase().replace(" ", "-");
-  console.log(id);
-
-  $(p).addClass("mdl-cell preference-cell mdl-cell--3-col");
-  $(p).html(`
-    <div class="preference-card-square mdl-card mdl-shadow--3dp">
-      <div
-        class="mdl-card__title mdl-card--expand"
-        style="background: url('${prefParams.img}') top/cover"
-      >
-        <h2
-          class="mdl-card__title-text"
-          style="padding: 0 0.2em; border-radius: 0.2em; background-color: rgba(6,6,6,0.6)"
-        >
-          ${prefParams.titleText} &nbsp;<i class="material-icons">link</i>
-        </h2>
-      </div>
-      <div class="mdl-card__supporting-text">
-        <div class="mdl-slider__container">
-          <i class="far ${
-            prefParams.leftSliderIcon
-          } fa-lg pr-3" aria-hidden="true"></i>
-          <input
-            class="mdl-slider mdl-js-slider"
-            type="range"
-            min=${prefParams.minSliderVal}
-            max=${prefParams.maxSliderVal}
-            value=${prefParams.curSliderVal}
-            tabindex="0"
-          />
-          <i class="far ${
-            prefParams.rightSliderIcon
-          } fa-lg pr-3" aria-hidden="true"></i>
-        </div>
-        <label
-          class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
-          for="switch-${id}"
-        >
-          <input
-            type="checkbox"
-            id="switch-${id}"
-            class="mdl-switch__input"
-          />
-        </label>
-      </div>
-    </div>
-  `);
-  return p;
-}
-
-function createTextPrefCard(prefParams) {
-  p = document.createElement("div");
-  id = prefParams.titleText.toLowerCase().replace(" ", "-");
-  console.log(id);
-
-  $(p).addClass("mdl-cell preference-cell mdl-cell--3-col");
-  $(p).html(`
-    <div class="preference-card-square mdl-card mdl-shadow--3dp">
-      <div
-        class="mdl-card__title mdl-card--expand"
-        style="background: url('${prefParams.img}') top/cover"
-      >
-        <h2
-          class="mdl-card__title-text"
-          style="padding: 0 0.2em; border-radius: 0.2em; background-color: rgba(6,6,6,0.6)"
-        >
-          ${prefParams.titleText} &nbsp;<i class="material-icons">link</i>
-        </h2>
-      </div>
-      <div class="mdl-card__supporting-text">
-        <div class="md-form">
-          <i class="far ${prefParams.icon} fa-lg pr-3" aria-hidden="true"></i>
-          <input
-            type="text"
-            id="${id}"
-            class="form-control"
-            placeholder="Job Title"
-            disabled
-          />
-        </div>
-        <label
-          class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
-          for="switch-${id}"
-        >
-          <input
-            type="checkbox"
-            id="switch-${id}"
-            class="mdl-switch__input"
-          />
-        </label>
-      </div>
-    </div>
-  `);
-  return p;
-}
-
-function createResultsHTML(bodyDivId) {
-  let bodyDiv = document.getElementById(bodyDivId);
-  $(bodyDiv).empty();
-
-  let header = createHeader("City Match", "search");
-  let menuDrawer = createMenuDrawer("Settings", ["About", "Contact", "Help"]);
-  let hamburgerMenu = createHamburgerMenu();
-  let footer = createFooter("navigate_before");
-
-  $(bodyDiv).append(header);
-  $(bodyDiv).append(menuDrawer);
-  $(bodyDiv).append(hamburgerMenu);
-
-  m = document.createElement("main");
-  $(m).addClass("mdl-layout__content");
-  $(m).append('<div class="grid-content">');
-  g = document.createElement("div");
-  $(g).addClass("mdl-grid theGrid");
-  $(m).append(g);
-
-  let cityParams = {
-    img: "https://placehold.it/300x150",
-    titleText: "Seattle",
-    happiness: 50,
-    politics: 25,
-    affordability: 34,
-    jobOutlook: 5
-  };
-  let c = createCityCard(cityParams);
-  $(g).append(c);
-
-  cityParams = {
-    img: "https://placehold.it/300x150",
-    titleText: "Boston",
-    happiness: 50,
-    politics: 25,
-    affordability: 34,
-    jobOutlook: 5
-  };
-  c = createCityCard(cityParams);
-  $(g).append(c);
-
-  cityParams = {
-    img: "https://placehold.it/300x150",
-    titleText: "Austin",
-    happiness: 50,
-    politics: 25,
-    affordability: 34,
-    jobOutlook: 5
-  };
-  c = createCityCard(cityParams);
-  $(g).append(c);
-
-  cityParams = {
-    img: "https://placehold.it/300x150",
-    titleText: "New York",
-    happiness: 50,
-    politics: 25,
-    affordability: 34,
-    jobOutlook: 5
-  };
-  c = createCityCard(cityParams);
-  $(g).append(c);
-  $(bodyDiv).append(m);
-  $(bodyDiv).append(footer);
-}
-
-function createCityCard(cityParams) {
-  p = document.createElement("div");
-  id = cityParams.titleText.toLowerCase().replace(" ", "-");
-  console.log(id);
-
-  $(p).addClass("mdl-cell preference-cell mdl-cell--3-col");
-  $(p).html(`
-    <div class="preference-card-square mdl-card mdl-shadow--3dp">
-      <div
-        class="mdl-card__title mdl-card--expand"
-        style="background: url('${cityParams.img}') top/cover"
-      >
-        <h2
-          class="mdl-card__title-text"
-          style="padding: 0 0.2em; border-radius: 0.2em; background-color: rgba(6,6,6,0.6)"
-        >
-          ${cityParams.titleText} &nbsp;<i class="material-icons">link</i>
-        </h2>
-      </div>
-      <div class="mdl-card__supporting-text">
-        City stats ...
-      </div>
-    </div>
-  `);
-  return p;
-}
+Controller.prototype.getDataViewEventListener = function() {
+  let that = this;
+  function innerFunction() {
+    console.log("click");
+    console.log("this = ", this);
+    console.log("that = ", that);
+  }
+  return innerFunction;
+};

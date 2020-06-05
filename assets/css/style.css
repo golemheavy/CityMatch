@@ -1,0 +1,307 @@
+.mdl-layout__header,
+.mdl-layout__drawer-button,
+.mdl-layout__header-row .mdl-navigation__link {
+  color: white;
+}
+
+.mdl-navigation__link {
+  margin: 0 1em;
+  line-height: 2em;
+}
+
+.mdl-logo {
+  margin-bottom: 0px;
+}
+
+.mdl-card__title-text {
+  color: white;
+}
+
+.mdl-card__supporting-text {
+  background-color: white;
+}
+
+.landing-card-wide.mdl-card {
+  width: 75%;
+  max-width: 26em;
+}
+
+.landing-card-wide > .mdl-card__title {
+  color: #fff;
+  height: 11em;
+  background: url("../img/welcome-moon.png") bottom / cover;
+}
+
+.landing-card-wide > .mdl-card__menu {
+  color: #fff;
+}
+
+.preference-card-square.mdl-card {
+  width: 100%;
+  /* I'd like to limit the width of pref cells, but it has the
+     side-effect of messing with the centering of pref cards
+     within the grid cell. :-/  */
+  /* max-width: 15.3125em; */
+}
+
+.mdl-slider__container {
+  /* width: 17.5em; */
+  width: 90%;
+  padding: 0 0.4em;
+}
+
+/* http://danielstern.ca/range.css/?ref=css-tricks#/ */
+input[type="range"].enhanced-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 11.65px 0;
+}
+input[type="range"].enhanced-slider:focus {
+  outline: none;
+}
+input[type="range"].enhanced-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 3.7px;
+  cursor: pointer;
+  box-shadow: 1.3px 1.3px 0.2px rgba(0, 0, 0, 0.29),
+    0px 0px 1.3px rgba(13, 13, 13, 0.29);
+  background: rgba(7, 13, 19, 0.17);
+  border-radius: 3.6px;
+  border: 0px solid #010101;
+}
+input[type="range"].enhanced-slider::-webkit-slider-thumb {
+  box-shadow: 1.4px 1.4px 0px #b3adec, 0px 0px 1.4px #c6c2f1;
+  border: 1.4px solid rgba(0, 0, 0, 0);
+  height: 27px;
+  width: 21px;
+  border-radius: 17px;
+  background: #467ee2;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -11.65px;
+}
+input[type="range"].enhanced-slider:focus::-webkit-slider-runnable-track {
+  background: rgba(18, 33, 49, 0.17);
+}
+input[type="range"].enhanced-slider::-moz-range-track {
+  width: 100%;
+  height: 3.7px;
+  cursor: pointer;
+  box-shadow: 1.3px 1.3px 0.2px rgba(0, 0, 0, 0.29),
+    0px 0px 1.3px rgba(13, 13, 13, 0.29);
+  background: rgba(7, 13, 19, 0.17);
+  border-radius: 3.6px;
+  border: 0px solid #010101;
+}
+input[type="range"].enhanced-slider::-moz-range-thumb {
+  box-shadow: 1.4px 1.4px 0px #b3adec, 0px 0px 1.4px #c6c2f1;
+  border: 1.4px solid rgba(0, 0, 0, 0);
+  height: 27px;
+  width: 21px;
+  border-radius: 17px;
+  background: #467ee2;
+  cursor: pointer;
+}
+input[type="range"].enhanced-slider::-ms-track {
+  width: 100%;
+  height: 3.7px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+/* blue-purple-red politics gradient slider track */
+/* https://codepen.io/egrucza/pen/LEoOQZ */
+/* Commenting out for now because i'm not sure it enhances usability. */
+/* It would be better for the slider thumb to change color. */
+/* div.mdl-card__supporting-text
+  > div[id="slider-politics-container"]
+  > div
+  > div
+  > div.mdl-slider__background-lower {
+  -webkit-appearance: none;
+  background: rgba(59, 173, 227, 1);
+  background: -moz-linear-gradient(
+    45deg,
+    rgba(59, 173, 227, 1) 0%,
+    rgba(87, 111, 230, 1) 33%,
+    rgba(152, 68, 183, 1) 70%,
+    rgba(150, 53, 127, 1) 100%
+  );
+  background: -webkit-gradient(
+    left bottom,
+    right top,
+    color-stop(0%, rgba(59, 173, 227, 1)),
+    color-stop(25%, rgba(87, 111, 230, 1)),
+    color-stop(51%, rgba(152, 68, 183, 1)),
+    color-stop(100%, rgba(255, 53, 127, 1))
+  );
+  background: -webkit-linear-gradient(
+    45deg,
+    rgba(59, 173, 227, 1) 0%,
+    rgba(87, 111, 230, 1) 25%,
+    rgba(152, 68, 183, 1) 51%,
+    rgba(255, 53, 127, 1) 100%
+  );
+  background: -o-linear-gradient(
+    45deg,
+    rgba(59, 173, 227, 1) 0%,
+    rgba(87, 111, 230, 1) 25%,
+    rgba(152, 68, 183, 1) 51%,
+    rgba(255, 53, 127, 1) 100%
+  );
+  background: -ms-linear-gradient(
+    45deg,
+    rgba(59, 173, 227, 1) 0%,
+    rgba(87, 111, 230, 1) 25%,
+    rgba(152, 68, 183, 1) 51%,
+    rgba(255, 53, 127, 1) 100%
+  );
+  background: linear-gradient(
+    45deg,
+    rgba(59, 173, 227, 1) 0%,
+    rgba(87, 111, 230, 1) 25%,
+    rgba(152, 68, 183, 1) 51%,
+    rgba(255, 53, 127, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3bade3 ', endColorstr='#ff357f ', GradientType=1 );
+} */
+input[type="range"].enhanced-slider::-ms-fill-lower {
+  background: rgba(0, 0, 0, 0.17);
+  border: 0px solid #010101;
+  border-radius: 7.2px;
+  box-shadow: 1.3px 1.3px 0.2px rgba(0, 0, 0, 0.29),
+    0px 0px 1.3px rgba(13, 13, 13, 0.29);
+}
+input[type="range"].enhanced-slider::-ms-fill-upper {
+  background: rgba(7, 13, 19, 0.17);
+  border: 0px solid #010101;
+  border-radius: 7.2px;
+  box-shadow: 1.3px 1.3px 0.2px rgba(0, 0, 0, 0.29),
+    0px 0px 1.3px rgba(13, 13, 13, 0.29);
+}
+input[type="range"].enhanced-slider::-ms-thumb {
+  box-shadow: 1.4px 1.4px 0px #b3adec, 0px 0px 1.4px #c6c2f1;
+  border: 1.4px solid rgba(0, 0, 0, 0);
+  height: 27px;
+  width: 21px;
+  border-radius: 17px;
+  background: #467ee2;
+  cursor: pointer;
+  height: 3.7px;
+}
+input[type="range"].enhanced-slider:focus::-ms-fill-lower {
+  background: rgba(7, 13, 19, 0.17);
+}
+input[type="range"].enhanced-slider:focus::-ms-fill-upper {
+  background: rgba(18, 33, 49, 0.17);
+}
+
+.results-card.mdl-card {
+  min-height: 23.125em;
+  width: 17.313em;
+}
+
+.mdl-grid {
+  /* The mystical key to allowing pref cards
+     to disappear before they hit the footer. */
+  height: 73vh; /* Hmm ... may want to media query this. */
+  overflow: scroll;
+}
+
+@media screen and (max-width: 320px) {
+  .mdl-grid {
+    height: 70vh;
+  }
+}
+
+.mdl-cell {
+  box-sizing: border-box;
+  padding: 0.5em;
+  color: black;
+  margin: 0 auto;
+  margin-top: 1.667em;
+  min-width: 20.83em;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 3em;
+  margin-bottom: 3em;
+  flex: 1;
+}
+
+.footer-fab {
+  position: absolute;
+  bottom: 0.4em;
+  right: calc(50% - 1.3em);
+  z-index: 1;
+  color: white;
+  box-shadow: 0 0.313em 0.625em rgba(0, 0, 0, 0.19),
+    0 0.375em 0.375em rgba(0, 0, 0, 0.23);
+}
+
+#navigate_before,
+#navigate_next {
+  width: 2.75em;
+  height: 2.75em;
+}
+
+footer.mdl-mini-footer {
+  padding: 0.25em 0.125em;
+  position: relative;
+  overflow: visible;
+}
+
+.footer-icons {
+  padding-top: 0.25em;
+}
+
+.copyright-text {
+  font-size: 0.8em;
+}
+
+a[class~="is-active"] .view-button {
+  color: #3f52b5;
+}
+
+a .view-button {
+  color: #777;
+}
+
+.view-buttons {
+  height: 2.6em;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.view-button {
+  margin: 0 0;
+  padding: 0.2em 0.15em;
+}
+
+.view-icons {
+  margin-bottom: 0.5em;
+}
+
+.mdl-tabs__tab {
+  padding: 0 0;
+}
+
+.blue-text {
+  color: blue;
+}
+
+.red-text {
+  color: red;
+}
+
+#icon-octocat {
+  font-size: 2em;
+  padding-top: 0.15em;
+  color: white;
+}
